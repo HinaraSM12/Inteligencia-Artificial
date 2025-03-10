@@ -1,0 +1,80 @@
+[System]
+Name='FIS_E-Learning'
+Type='mamdani'
+Version=2.0
+NumInputs=3
+NumOutputs=2
+NumRules=20
+AndMethod='min'
+OrMethod='max'
+ImpMethod='min'
+AggMethod='max'
+DefuzzMethod='centroid'
+
+[Input1]
+Name='dificultad'
+Range=[0 100]
+NumMFs=4
+MF1='principiante':'trimf',[0 12.5 25]
+MF2='dificil':'trimf',[45 62.5 80]
+MF3='experto':'trapmf',[70 90 100 100]
+MF4='intermedio':'trapmf',[20 35 45 60]
+
+[Input2]
+Name='seleccion'
+Range=[0 1]
+NumMFs=4
+MF1='baja':'trapmf',[0 0.1 0.2 0.3]
+MF2='media_alta':'trimf',[0.4 0.55 0.7]
+MF3='alta':'trapmf',[0.6 0.75 1 1]
+MF4='media_baja':'trimf',[0.2 0.33 0.45]
+
+[Input3]
+Name='satisfaccion'
+Range=[0 10]
+NumMFs=4
+MF1='muy_baja':'trapmf',[0 0 1 2]
+MF2='media':'trimf',[3 5 7]
+MF3='alta':'trapmf',[6 8 10 10]
+MF4='baja':'trimf',[1 2.5 4]
+
+[Output1]
+Name='costo'
+Range=[0 500]
+NumMFs=4
+MF1='muy_bajo':'trapmf',[0 25 50 75]
+MF2='bajo':'trimf',[60 120 175]
+MF3='alto':'trapmf',[300 400 500 500]
+MF4='medio':'trimf',[150 250 350]
+
+[Output2]
+Name='duracion'
+Range=[0 100]
+NumMFs=5
+MF1='media':'trimf',[20 35 50]
+MF2='larga':'trimf',[40 60 80]
+MF3='corta':'trimf',[5 17 25]
+MF4='muy_corta':'trimf',[0 5 10]
+MF5='muy_larga':'trapmf',[65 75 100 100]
+
+[Rules]
+1 3 3, 1 4 (1) : 1
+4 2 2, 2 3 (1) : 1
+4 4 2, 4 1 (1) : 1
+2 4 4, 3 2 (1) : 1
+3 1 1, 3 5 (1) : 1
+1 3 2, 2 4 (1) : 1
+4 2 2, 4 3 (1) : 1
+1 3 3, 1 3 (1) : 1
+4 2 2, 4 1 (1) : 1
+4 1 2, 4 1 (1) : 2
+3 1 1, 3 2 (1) : 2
+1 0 1, 3 2 (1) : 1
+4 0 4, 3 2 (1) : 1
+2 0 2, 2 1 (1) : 1
+3 0 3, 2 3 (1) : 1
+0 3 3, 1 4 (1) : 1
+0 3 2, 2 3 (1) : 1
+0 4 2, 4 1 (1) : 1
+0 1 4, 3 5 (1) : 1
+0 4 4, 3 2 (1) : 1

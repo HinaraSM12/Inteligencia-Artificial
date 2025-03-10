@@ -1,0 +1,98 @@
+FUNCTION_BLOCK elearning	// Definición de bloque
+
+// El único tipo de variable soportada es REAL
+
+// Definición de las variables de entrada
+VAR_INPUT				
+        seleccion : REAL; RANGE := (0 .. 1);
+        satisfaccion : REAL; RANGE := (0 .. 10);
+        dificultad : REAL; RANGE := (0 .. 100);
+END_VAR
+
+// Definición de las variables de salida
+VAR_OUTPUT
+        costo : REAL; RANGE := (0 .. 500);
+        duracion : REAL; RANGE := (0 .. 100);				
+END_VAR
+
+// Fuzzificación de la variable de entrada 'seleccion'
+FUZZIFY seleccion
+        TERM baja := trape 0 0.1 0.2 0.3;
+        TERM media_baja := trian 0.2 0.33 0.45;
+        TERM media_alta := trian 0.4 0.55 0.7;
+        TERM alta := trape 0.6 0.75 1 1;
+END_FUZZIFY
+
+// Fuzzificación de la variable de entrada 'satisfaccion'
+FUZZIFY satisfaccion
+        TERM muy_baja := trape 0 0 1 2;
+        TERM baja := trian 1 2.5 4;
+        TERM media := trian 3 5 7;
+        TERM alta := trape 6 8 10 10;
+END_FUZZIFY
+
+// Fuzzificación de la variable de entrada 'dificultad'
+FUZZIFY dificultad
+        TERM principiante := trian 0 12.5 25; 
+        TERM intermedio := trape 20 35 45 60;
+        TERM dificil := trian 45 62.5 80;
+        TERM experto := trape 70 90 100 100;
+END_FUZZIFY
+
+// Defuzzificación de la variable de salida 'costo'
+DEFUZZIFY costo
+        TERM muy_bajo := trape 0 25 50 75; 
+        TERM bajo := trian 60 120 175;
+        TERM medio := trian 150 250 350;
+        TERM alto := trape 300 400 500 500;
+
+        METHOD : COG;		// Usa el metodo de 'Centro de Gravedad'
+        DEFAULT := 0;		// Valor por defecto si ninguna regla activa el defuzzificador
+END_DEFUZZIFY
+
+// Defuzzificación de la variable de salida 'duracion'
+DEFUZZIFY duracion
+        TERM muy_corta := trian 0 5 10; 
+        TERM corta := trian 5 17 25;
+        TERM media := trian 20 35 50;
+        TERM larga := trian 40 60 80;
+        TERM muy_larga := trape 65 75 100 100;
+
+        METHOD : COG;		// Usa el metodo de 'Centro de Gravedad'
+        DEFAULT := 0;		// Valor por defecto si ninguna regla activa el defuzzificador
+END_DEFUZZIFY
+
+
+// Reglas de inferencia
+RULEBLOCK No1
+        AND : MIN;	// Usa el 'mín' para el 'AND' y por defecto el 'máx' para el 'OR' (operador difuso).
+        ACT : MIN;	// Usa el metodo 'min' para la activación/implicación (trunca)
+        ACCU : MAX;	// Usa el 'max' para la acumulación/agregación
+
+        RULE 1 : IF (seleccion IS alta) AND (satisfaccion IS alta) AND (dificultad IS principiante) THEN costo IS muy_bajo, duracion IS muy_corta;
+        RULE 2 : IF (seleccion IS media_alta) AND (satisfaccion IS media) AND (dificultad IS intermedio) THEN costo IS bajo, duracion IS corta;
+        RULE 3 : IF (seleccion IS media_baja) AND (satisfaccion IS media) AND (dificultad IS intermedio) THEN costo IS medio, duracion IS media;
+        RULE 4 : IF (seleccion IS media_baja) AND (satisfaccion IS baja) AND (dificultad IS dificil) THEN costo IS alto, duracion IS larga;
+        RULE 5 : IF (seleccion IS baja) AND (satisfaccion IS muy_baja) AND (dificultad IS experto) THEN costo IS alto, duracion IS muy_larga;
+
+        RULE 6 : IF (seleccion IS alta) AND (satisfaccion IS media) AND (dificultad IS principiante) THEN costo IS bajo, duracion IS muy_corta;
+        RULE 7 : IF (seleccion IS media_alta) AND (satisfaccion IS media) AND (dificultad IS intermedio) THEN costo IS medio, duracion IS corta;
+        RULE 8 : IF (seleccion IS alta) OR (satisfaccion IS alta) OR (dificultad IS principiante) THEN costo IS muy_bajo, duracion IS corta;
+        RULE 9 : IF (seleccion IS media_alta) OR (satisfaccion IS media) OR (dificultad IS intermedio) THEN costo IS medio, duracion IS media;
+        RULE 10 : IF (seleccion IS baja) OR (satisfaccion IS media) OR (dificultad IS intermedio) THEN costo IS medio, duracion IS media;
+
+        RULE 11 : IF (seleccion IS baja) OR (satisfaccion IS muy_baja) OR (dificultad IS experto) THEN costo IS alto, duracion IS larga;
+        RULE 12 : IF (satisfaccion IS muy_baja) AND (dificultad IS principiante) THEN costo IS alto, duracion IS larga;
+        RULE 13 : IF (satisfaccion IS baja) AND (dificultad IS intermedio) THEN costo IS alto, duracion IS larga;
+        RULE 14 : IF (satisfaccion IS media) AND (dificultad IS dificil) THEN costo IS bajo, duracion IS media;
+        RULE 15 : IF (satisfaccion IS alta) AND (dificultad IS experto) THEN costo IS bajo, duracion IS corta;
+
+        RULE 16 : IF (seleccion IS alta) AND (satisfaccion IS alta) THEN costo IS muy_bajo, duracion IS muy_corta;
+        RULE 17 : IF (seleccion IS alta) AND (satisfaccion IS media) THEN costo IS bajo, duracion IS corta;
+        RULE 18 : IF (seleccion IS media_baja) AND (satisfaccion IS media) THEN costo IS medio, duracion IS media;
+        RULE 19 : IF (seleccion IS baja) AND (satisfaccion IS baja) THEN costo IS alto, duracion IS muy_larga;
+        RULE 20 : IF (seleccion IS media_baja) AND (satisfaccion IS baja) THEN costo IS alto, duracion IS larga;
+
+END_RULEBLOCK
+
+END_FUNCTION_BLOCK
